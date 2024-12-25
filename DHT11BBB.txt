@@ -9,3 +9,113 @@ ls /sys/class/gpio/  - to check directory
 
 Error opening in GPIO Direction no such file or directory error is getting while ./dht11
 
+Code:- 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <time.h>
+
+#define GPIO_PIN 45 // GPIO number (P8_11 on BBB)
+#define MAX_TIMINGS 85
+
+void exportGPIO(int pin) {
+    FILE *fp = fopen("/sys/class/gpio/export", "w");
+    if (fp == NULL) {
+        perror("Error exporting GPIO");
+        exit(EXIT_FAILURE);
+    }
+    fprintf(fp, "%d", pin);
+    fclose(fp);
+}
+
+void unexportGPIO(int pin) {
+    FILE *fp = fopen("/sys/class/gpio/unexport", "w");
+    if (fp == NULL) {
+        perror("Error unexporting GPIO");
+        exit(EXIT_FAILURE);
+    }
+    fprintf(fp, "%d", pin);
+    fclose(fp);
+}
+
+void setGPIODirection(int pin, const char *direction) {
+    char path[50];
+    sprintf(path, "/sys/class/gpio/gpio%d/direction", pin);
+    FILE *fp = fopen(path, "w");
+    if (fp == NULL) {
+        perror("Error setting GPIO direction");
+        exit(EXIT_FAILURE);
+    }
+    fprintf(fp, "%s", direction);
+    fclose(fp);
+}
+
+void writeGPIO(int pin, int value) {
+    char path[50];
+    sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
+    FILE *fp = fopen(path, "w");
+    if (fp == NULL) {
+        perror("Error writing to GPIO");
+        exit(EXIT_FAILURE);
+    }
+    fprintf(fp, "%d", value);
+    fclose(fp);
+}
+
+int readGPIO(int pin) {
+    char path[50];
+    sprintf(path, "/sys/class/gpio/gpio%d/value", pin);
+    FILE *fp = fopen(path, "r");
+    if (fp == NULL) {
+        perror("Error reading GPIO");
+        return -1;
+    }
+    char value = fgetc(fp);
+    fclose(fp);
+    return (value == '1') ? 1 : 0;
+}
+
+int main() {
+    int data[5] = {0, 0, 0, 0, 0};
+    int last_state = 1, counter = 0, j = 0, i;
+
+    exportGPIO(GPIO_PIN);
+    usleep(100000); // Allow GPIO setup
+    setGPIODirection(GPIO_PIN, "out");
+
+    // Send start signal to DHT11
+    writeGPIO(GPIO_PIN, 0);
+    usleep(18000); // 18ms low signal
+    writeGPIO(GPIO_PIN, 1);
+    usleep(40); // Wait 40µs
+
+    setGPIODirection(GPIO_PIN, "in");
+    for (i = 0; i < MAX_TIMINGS; i++) {
+        counter = 0;
+        while (readGPIO(GPIO_PIN) == last_state) {
+            counter++;
+            usleep(1);
+            if (counter == 255) break;
+        }
+        last_state = readGPIO(GPIO_PIN);
+
+        if (counter == 255) break;
+        if (i >= 4 && i % 2 == 0) {
+            data[j / 8] <<= 1;
+            if (counter > 16) data[j / 8] |= 1;
+            j++;
+        }
+    }
+   if (j >= 40 && (data[0] + data[1] + data[2] + data[3]) == data[4]) {
+        printf("Humidity: %d.%d%%\n", data[0], data[1]);
+        printf("Temperature: %d.%d°C\n", data[2], data[3]);
+    } else {
+        printf("Invalid data received.\n");
+    }
+
+     unexportGPIO(GPIO_PIN);
+    return 0;
+}
