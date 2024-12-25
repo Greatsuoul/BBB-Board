@@ -1,0 +1,11 @@
+echo 44 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio45/direction
+
+sudo chmod -R 777 /sys/class/gpio/
+
+config-pin -q P8_12
+
+ls /sys/class/gpio/  - to check directory
+
+Error opening in GPIO Direction no such file or directory error is getting while ./dht11
+
