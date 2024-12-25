@@ -1,0 +1,18 @@
+Derek Malloy’s book on BeagleBoneBlack
+https://www.beagleboard.org/blog/2022-02-15-using-device-tree-overlays-example-on-beaglebone-cape-add-on-boards
+
+you have to enable a device tree overlay for one-wire For DHT11
+
+The Device Tree language is a way to describe hardware that is present in a system and cannot be automatically detected.
+do not provide mechanisms for dynamic enumeration and identification of devices.
+Device Tree (DTB: Device Tree Binary), passed to the kernel by the bootloader at boot time, lets the kernel know which SoC and devices to initialize.
+all you have to do is create a new Device Tree describing your new hardware, compile it, and boot the distribution’s kernel with it
+don’t need to recompile that kernel
+
+Device Tree Source (DTS) files are normally distributed by kernel developers inside the Linux sources
+at boot time, all you have to do is load the main DTB for your board, and then override it using the DTBOs corresponding to the capes which are currently mounted.
+bootloader based solution at boot time remains so far the best one.
+
+
+https://github.com/torvalds/linux/
+linux/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
