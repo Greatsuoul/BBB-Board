@@ -13,6 +13,11 @@ Device Tree Source (DTS) files are normally distributed by kernel developers ins
 at boot time, all you have to do is load the main DTB for your board, and then override it using the DTBOs corresponding to the capes which are currently mounted.
 bootloader based solution at boot time remains so far the best one.
 
+need to create a custom device tree source (DTS) file and compile it into a DTB file. The DTS file defines the hardware configuration and is used to generate the DTB file.
+      find templates in the Linux kernel source tree (arch/<arch>/boot/dts/) or online resources (e.g., Linux       Device Tree).
+      Modify the template to match your hardware’s specific configuration. Add or remove nodes, properties,         and phandles as needed. Keep in mind the DTS syntax and conventions.
+      
+
 
 https://github.com/torvalds/linux/
 linux/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
