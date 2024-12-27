@@ -1,0 +1,18 @@
+https://longervision.github.io/2018/01/10/SBCs/ARM/beaglebone-black-uboot-kernel/#part-a-cross-compile-u-boot-and-linux-kernel
+
+rfs:
+https://angstrom.s3.amazonaws.com/demo/beagleboard/index.html
+
+uboot:
+https://github.com/beagleboard/u-boot.git 
+
+kernel:
+https://www.kernel.org/
+
+=>setenv bootargs console=ttyS0,115200 rw root=/dev/mmcblk0p2 rootfstype=ext4
+rootwait
+Load the kernel and device tree into RAM
+=> load mmc 0:1 0x82000000 zImage
+=> load mmc 0:1 0x84000000 am335x-boneblack.dtb
+Boot the kernel from RAM using bootz
+=> bootz 0x82000000 – 0x84000000
