@@ -20,6 +20,11 @@ after download cross compile and creates zImage and dtb file
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LOADADDR=0x82000000 uImage // for zImage 
     make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LOADADDR=0x82000000 dtbs// for .dtb file creation
 
+to copy downloaded rootfs
+sudo tar -xvjf ~/Downloads/Angstrom-Beagleboard-demo-image-glibc-ipk-2011.1-beagleboard.rootfs.tar.bz2 -C /media/prasad/473f24b8-a4b4-4230-b153-6063032ae57c/
+
+
+
 
 =>setenv bootargs console=ttyS0,115200 rw root=/dev/mmcblk0p2 rootfstype=ext4
 rootwait
