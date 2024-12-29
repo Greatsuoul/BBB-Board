@@ -5,9 +5,21 @@ https://angstrom.s3.amazonaws.com/demo/beagleboard/index.html
 
 uboot:
 https://github.com/beagleboard/u-boot.git 
+after Download Goto directory of uboot then use these commands
+    export
+    export gcc-arm-linux-gnueabihf-
+    export CROSS_COMPILE=gcc-arm-linux-gnueabihf-
+    make am335x_boneblack_defconfig
+    make
 
 kernel:
 https://www.kernel.org/
+after download cross compile and creates zImage and dtb file
+    make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig
+    make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- uImage dtbs
+    make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LOADADDR=0x82000000 uImage // for zImage 
+    make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LOADADDR=0x82000000 dtbs// for .dtb file creation
+
 
 =>setenv bootargs console=ttyS0,115200 rw root=/dev/mmcblk0p2 rootfstype=ext4
 rootwait
