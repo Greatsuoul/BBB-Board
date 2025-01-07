@@ -1,0 +1,3 @@
+https://forums.raspberrypi.com/viewtopic.php?f=44&t=141052
+https://github.com/tolgakarakurt/CANBus-MCP2515-Raspi
+https://github.com/omarKmekkawy/RaspberryPi_MCP2515_CAN
