@@ -1,3 +1,34 @@
 https://forums.raspberrypi.com/viewtopic.php?f=44&t=141052
 https://github.com/tolgakarakurt/CANBus-MCP2515-Raspi
 https://github.com/omarKmekkawy/RaspberryPi_MCP2515_CAN
+
+VCC to 5V
+GND to GND
+CS to GPIO8()
+SCK to GPIO11()
+SI to GPIO10()
+SO to GPIO9()
+INT to GPIO25()
+
+
+sudo apt install can-utils
+sudo apt update
+ifconfig -a
+sudo raspi-config(Enable SPI,sudo reboot)
+
+sudo nano /boot/firmware
+    dtoverlay=mcp2515-can0-overlay,oscillator=16000000,interrupt=25
+    dtoverlay=spi-bcm2835
+    sudo reboot
+
+
+sudo modprobe mcp251x
+sudo modprobe can_raw
+dmesg | grep mcp
+dmesg | grep can
+ifconfig -a
+
+sudo ip link set can0 up type can bitrate 500000
+
+candump can0 
+cansend can0 123#11223344AABBCCDD
