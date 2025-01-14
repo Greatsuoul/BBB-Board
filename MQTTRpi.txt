@@ -1,0 +1,107 @@
+How to Use MQTT over Ethernet between Two Raspberry Pis:
+1. Install MQTT Broker on One Raspberry Pi:
+The first step is to install an MQTT broker, which will handle the messaging between devices. The most common MQTT broker is Mosquitto.
+
+Install Mosquitto Broker on Raspberry Pi 1:
+Update your package lists:
+
+bash
+Copy code
+sudo apt update
+Install the Mosquitto broker:
+
+bash
+Copy code
+sudo apt install mosquitto mosquitto-clients
+Enable Mosquitto to start automatically on boot:
+
+bash
+Copy code
+sudo systemctl enable mosquitto
+(Optional) You can configure Mosquitto if needed by editing the configuration file:
+
+bash
+Copy code
+sudo nano /etc/mosquitto/mosquitto.conf
+After modifying, restart Mosquitto:
+
+bash
+Copy code
+sudo systemctl restart mosquitto
+The MQTT broker is now running on Raspberry Pi 1.
+
+2. Install MQTT Client on Both Raspberry Pis:
+Next, you need to install MQTT clients on both Raspberry Pis to allow them to send and receive messages.
+
+Install MQTT Client on Raspberry Pi 2:
+Install the Mosquitto client tools:
+bash
+Copy code
+sudo apt install mosquitto-clients
+3. Test MQTT Communication:
+On Raspberry Pi 1 (Broker), you can now subscribe to a topic, like test/topic:
+
+bash
+Copy code
+mosquitto_sub -h 127.0.0.1 -t test/topic
+On Raspberry Pi 2 (Client), you can publish a message to that topic:
+
+bash
+Copy code
+mosquitto_pub -h 192.168.1.100 -t test/topic -m "Hello from Pi 2"
+Replace 192.168.1.100 with the actual static IP address of Raspberry Pi 1.
+
+4. Test the Communication:
+When you publish a message from Raspberry Pi 2, you should see it appear on Raspberry Pi 1’s terminal where you’re subscribed to the test/topic topic.
+5. Python MQTT Client (Optional):
+If you want to use MQTT in a Python program, you can use the paho-mqtt library.
+
+Install paho-mqtt on Both Raspberry Pis:
+bash
+Copy code
+pip install paho-mqtt
+Sample Python MQTT Client Code for Raspberry Pi 2 (Subscriber):
+python
+Copy code
+import paho.mqtt.client as mqtt
+
+# Callback function for when a message is received
+def on_message(client, userdata, message):
+    print(f"Received message: {message.payload.decode()} on topic: {message.topic}")
+
+# Create MQTT client instance
+client = mqtt.Client()
+
+# Assign the on_message callback function
+client.on_message = on_message
+
+# Connect to the MQTT broker (Raspberry Pi 1)
+client.connect("192.168.1.100", 1883, 60)
+
+# Subscribe to the topic
+client.subscribe("test/topic")
+
+# Start the MQTT client loop to receive messages
+client.loop_forever()
+Sample Python MQTT Client Code for Raspberry Pi 1 (Publisher):
+python
+Copy code
+import paho.mqtt.client as mqtt
+
+# Create MQTT client instance
+client = mqtt.Client()
+
+# Connect to the MQTT broker (Raspberry Pi 1)
+client.connect("192.168.1.100", 1883, 60)
+
+# Publish a message to the topic
+client.publish("test/topic", "Hello from Raspberry Pi 1!")
+
+# Disconnect after sending the message
+client.disconnect()
+When running the publisher on Raspberry Pi 1 and the subscriber on Raspberry Pi 2, you should see the message appear on the subscriber’s terminal.
+
+Key Points:
+Broker: The MQTT broker (Mosquitto) can run on one Raspberry Pi, acting as the central communication point.
+Client: Other Raspberry Pis (or devices) can connect to the broker as MQTT clients, subscribing to or publishing to topics.
+Communication: Messages are sent using topics, and clients can publish or subscribe to specific topics. The broker ensures messages are delivered to all subscribers of a topic.
